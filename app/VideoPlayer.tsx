@@ -414,9 +414,9 @@ export default function VideoPlayer() {
 
       <div className="persistent-player" ref={containerRef} onMouseEnter={() => setShowControls(true)} onMouseLeave={() => setShowControls(false)}
         style={{ 
-          aspectRatio: currentSource?.type === 'audio' ? 'auto' : '16/9', 
-          minHeight: currentSource?.type === 'audio' ? '120px' : 'auto',
-          background: currentSource?.type === 'audio' ? 'linear-gradient(45deg, #0a2e1c, #000)' : '#000'
+          aspectRatio: isAudioMode ? 'auto' : '16/9', 
+          minHeight: isAudioMode ? '120px' : 'auto',
+          background: isAudioMode ? 'linear-gradient(45deg, #0a2e1c, #000)' : '#000'
         }}
       >
         {isAdVisible ? (
@@ -426,9 +426,9 @@ export default function VideoPlayer() {
         ) : (
           <>
             <div className="video-frame" id={`yt-player-${activeMiqaat.id}`} style={{ 
-               position: !isYTMode ? 'absolute' : 'relative',
-               left: !isYTMode ? '-9999px' : '0',
-               opacity: !isYTMode ? 0 : 1
+               position: (!isYTMode || isAudioMode) ? 'absolute' : 'relative',
+               left: (!isYTMode || isAudioMode) ? '-9999px' : '0',
+               opacity: (!isYTMode || isAudioMode) ? 0 : 1
             }}>
                {!selectedServer && <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>INITIALIZING...</div>}
             </div>
@@ -456,7 +456,7 @@ export default function VideoPlayer() {
                         <div style={{ fontWeight: 800, color: '#daaf1d', fontSize: '1.2rem', letterSpacing: '1px' }}>LIVE AUDIO STREAM</div>
                         <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>{activeMiqaat.title}</div>
                      </div>
-                     {currentSource?.source && (
+                     {currentSource?.source && !isYTMode && (
                         <audio autoPlay src={currentSource.source} ref={audioRef} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
                      )}
                   </div>

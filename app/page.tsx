@@ -2,6 +2,8 @@ import { cookies } from 'next/headers'
 import LoginForm from './LoginForm'
 import UserHome from './UserHome'
 
+export const runtime = 'edge';
+
 export default async function Page() {
   const cookieStore = await cookies()
   const isAuthorized = cookieStore.get('ashara_session')?.value === 'true'
