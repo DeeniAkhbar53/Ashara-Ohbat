@@ -114,8 +114,8 @@ export default function VideoPlayer() {
     : null;
 
   const isEmbedType = (src?: string, type?: string) => type === 'embed' || (src && (src.includes('<iframe') || src.includes('<div') || src.includes('<script')));
-  const isAudioType = (src?: string, type?: string) => type === 'audio';
-  const isYTType = (src?: string, type?: string) => !isEmbedType(src, type) && !isAudioType(src, type) && src;
+  const isYTType = (src?: string, type?: string) => type === 'youtube' || (src && (src.includes('youtube.com') || src.includes('youtu.be') || (src.length === 11 && !src.includes('.'))));
+  const isAudioType = (src?: string, type?: string) => type === 'audio' || (src && !isYTType(src, type) && !isEmbedType(src, type) && src.includes('.'));
 
   const isEmbedMode = isEmbedType(currentSource?.source, currentSource?.type);
   const isAudioMode = isAudioType(currentSource?.source, currentSource?.type);
