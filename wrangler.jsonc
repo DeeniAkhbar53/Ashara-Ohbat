@@ -1,7 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ashara-ohbat-portal",
+  "main": ".open-next/worker.js",
   "compatibility_date": "2025-09-27",
+  "build": {
+    "command": "npx opennextjs-cloudflare build"
+  },
   "observability": {
     "enabled": true
   },
