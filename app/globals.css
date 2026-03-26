@@ -1,0 +1,476 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;700&display=swap');
+
+:root {
+  --bg-green: #104127;
+  --gold: #daaf1d;
+  --gold-hover: #dcc583;
+  --button-red: #d21633;
+  --button-dark: #104328;
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg-green);
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  font-weight: 300;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.border-tile {
+  width: 100%;
+  height: 45px;
+  background-size: contain;
+  background-repeat: repeat-x;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.top-border {
+  background-image: url('/top-border.png');
+  margin-top: 0.5em;
+}
+
+.bottom-border {
+  background-image: url('/footer border.png');
+}
+
+.page-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 60px;
+  gap: 80px;
+  width: 100%;
+}
+
+/* --- LOGIN SECTION --- */
+.login-section {
+  flex: 1;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centering children */
+  text-align: center;
+  /* Centering text */
+}
+
+.header-logo {
+  margin-top: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2em;
+}
+
+.header-logo-img {
+  width: 320px;
+  /* Larger logo */
+  height: auto;
+  object-fit: contain;
+}
+
+.page-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3rem;
+  font-weight: 400;
+  margin: 15px 0 35px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1;
+  width: 100%;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  color: #323232;
+  background-color: #f5f5f5;
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-button {
+  width: 100%;
+  padding: 16px;
+  background-color: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.875rem;
+  font-family: 'Bebas Neue', cursive;
+  cursor: pointer;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+.login-button:active {
+  transform: scale(0.98);
+}
+
+.login-button:hover {
+  background-color: var(--gold-hover);
+}
+
+.forgot-password {
+  color: #fff;
+  text-decoration: underline;
+  font-size: 1.125rem;
+  margin-top: 25px;
+  cursor: pointer;
+}
+
+.support-section {
+  margin-top: 40px;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.support-link {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.visual-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calligraphy-img {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
+}
+
+/* --- DASHBOARD VIEW --- */
+.dashboard-view {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.dashboard-top-bar {
+  width: 100%;
+  padding: 0 100px;
+  display: flex;
+  justify-content: flex-end;
+  /* Default for mobile/tablet */
+  align-items: flex-start;
+  z-index: 10;
+}
+
+@media only screen and (min-width: 901px) {
+  .dashboard-top-bar {
+    justify-content: space-between;
+    /* Inline logo only on Desktop */
+    align-items: flex-start;
+    /* Maintain top flush, we will adjust logo offset */
+  }
+
+  .top-bar-logo {
+    display: block;
+    margin-top: 0.5%;
+    /* Micro-nudge below top border */
+  }
+
+  .mobile-logo-only {
+    display: none;
+    /* Hide duplicate logo on Desktop content stack */
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .top-bar-logo {
+    display: none;
+    /* Hide top-bar logo on mobile to avoid row overflow */
+  }
+
+  .mobile-logo-only {
+    display: block;
+    /* Restore centered logo for mobile content stack */
+  }
+}
+
+.top-bar-logo-img {
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+}
+
+.dashboard-actions {
+  width: 25%;
+  max-width: 320px;
+  background: var(--white);
+  padding: 0.8em 0.8em 1.2em;
+  /* Adjusted padding */
+  border-radius: 0 0 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 3px 9px -2px #888888 inset;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 9999;
+}
+
+
+.user-info {
+  color: #000;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 0.2em;
+}
+
+.user-name {
+  color: #000;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .dashboard-top-bar {
+    padding: 0 20px;
+    justify-content: center;
+    /* Centered on mobile */
+  }
+
+  .dashboard-actions {
+    width: 85% !important;
+    max-width: none;
+    margin: 0 auto;
+    padding: 1.2em 1em;
+  }
+}
+
+.dashboard-view .header-logo {
+  margin-top: 65px;
+}
+
+.action-form {
+  flex: 1;
+  display: flex;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.4em 1em;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Bebas Neue', cursive;
+  cursor: pointer;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.btn:active {
+  opacity: 0.8;
+}
+
+.btn-logout {
+  background-color: var(--button-red);
+}
+
+.btn-report {
+  background-color: var(--button-dark);
+}
+
+.dashboard-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 20px;
+  margin-top: 0;
+  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+  /* Constrain wide screens for better reading */
+  margin: 0 auto;
+}
+
+.content-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.content-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.dashboard-content .header-logo-img {
+  width: 250px;
+  height: auto;
+  margin-bottom: 1em;
+}
+
+.central-graphic {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.4));
+}
+
+@media only screen and (max-width: 900px) {
+  .page-wrapper {
+    flex-direction: column;
+    padding: 20px 15px;
+    gap: 20px;
+    justify-content: flex-start;
+  }
+
+  .login-section {
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .header-logo {
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .header-logo-img {
+    width: 250px;
+    height: auto;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    margin: 15px 0;
+    text-align: center;
+  }
+
+  .login-form {
+    width: 100%;
+  }
+
+  .support-section {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9rem;
+  }
+
+  .visual-section {
+    order: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .calligraphy-img {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  /* Dashboard Mobile Refinements */
+  .dashboard-top-bar {
+    padding: 0 10px !important;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-actions {
+    width: 92% !important; /* Wider for small phones */
+    max-width: 400px;
+    margin: 0 auto;
+    gap: 12px;
+    padding: 1.2rem 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 20px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .action-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    min-width: 120px;
+    border-radius: 50px !important;
+  }
+
+  .user-info {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  .dashboard-content {
+    padding: 0 10px !important;
+    gap: 15px !important;
+  }
+
+  .dashboard-content .header-logo-img {
+    width: clamp(180px, 60vw, 220px) !important;
+  }
+
+  .border-tile {
+    height: 30px;
+  }
+}
