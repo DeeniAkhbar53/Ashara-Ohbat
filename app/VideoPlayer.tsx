@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { db } from '../lib/firebase'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import Script from 'next/script'
 
 interface Miqaat {
   id: string;
@@ -25,6 +26,25 @@ declare global {
     adsbygoogle: any;
   }
 }
+
+const AdSenseAd = ({ inPlayer = false }: { inPlayer?: boolean }) => {
+    useEffect(() => {
+        try {
+            ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        } catch(e) {}
+    }, []);
+
+    return (
+        <div style={{ width: '100%', height: inPlayer ? '100%' : 'auto', minHeight: inPlayer ? 'auto' : '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <ins className="adsbygoogle"
+                 style={{ display: 'block', width: '100%', height: inPlayer ? '100%' : 'auto' }}
+                 data-ad-client="ca-pub-4478399347291835"
+                 data-ad-slot="3828932583"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    );
+};
 
 export default function VideoPlayer() {
   const [isMounted, setIsMounted] = useState(false)
@@ -89,9 +109,17 @@ export default function VideoPlayer() {
     (activeMiqaat.servers && !isNaN(parseInt(selectedServer)) ? 
       activeMiqaat.servers[parseInt(selectedServer)] : 
       (selectedServer === 'A' ? 
-        { source: activeMiqaat.serverA_source, type: activeMiqaat.serverA_type || 'youtube' } : 
-        { source: activeMiqaat.serverB_source, type: activeMiqaat.serverB_type || 'youtube' })) 
+        { source: activeMiqaat.serverA_source, type: activeMiqaat.serverA_type } : 
+        { source: activeMiqaat.serverB_source, type: activeMiqaat.serverB_type })) 
     : null;
+
+  const isEmbedType = (src?: string, type?: string) => type === 'embed' || (src && (src.includes('<iframe') || src.includes('<div') || src.includes('<script')));
+  const isAudioType = (src?: string, type?: string) => type === 'audio';
+  const isYTType = (src?: string, type?: string) => !isEmbedType(src, type) && !isAudioType(src, type) && src;
+
+  const isEmbedMode = isEmbedType(currentSource?.source, currentSource?.type);
+  const isAudioMode = isAudioType(currentSource?.source, currentSource?.type);
+  const isYTMode = isYTType(currentSource?.source, currentSource?.type);
 
   const isAdVisible = activeMiqaat?.isAdActive || preRollActive;
 
@@ -116,8 +144,7 @@ export default function VideoPlayer() {
         { source: activeMiqaat.serverA_source, type: activeMiqaat.serverA_type } : 
         { source: activeMiqaat.serverB_source, type: activeMiqaat.serverB_type });
 
-    const isYT = resolve?.source?.includes('youtube.com') || resolve?.source?.includes('youtu.be') || resolve?.type === 'youtube' || (resolve?.source?.length === 11 && !resolve.source.includes('.'));
-    if (!isYT) return;
+    if (!isYTType(resolve?.source, resolve?.type)) return;
 
     let videoId = '';
     if (resolve.source.includes('v=')) videoId = resolve.source.split('v=')[1].split('&')[0];
@@ -168,12 +195,10 @@ export default function VideoPlayer() {
   // Progress Tracker
   useEffect(() => {
     const timer = setInterval(() => {
-      const isYT = currentSource?.source?.includes('youtube.com') || currentSource?.source?.includes('youtu.be') || currentSource?.type === 'youtube' || (currentSource?.source?.length === 11 && !currentSource.source.includes('.'));
-      
-      if (isYT && playerRef.current && playerRef.current.getCurrentTime) {
+      if (isYTMode && playerRef.current && playerRef.current.getCurrentTime) {
          setCurrentTime(playerRef.current.getCurrentTime());
          setDuration(playerRef.current.getDuration() || 0);
-      } else if (currentSource?.type === 'audio' && audioRef.current) {
+      } else if (isAudioMode && audioRef.current) {
          setCurrentTime(audioRef.current.currentTime);
          setDuration(audioRef.current.duration || 0);
       }
@@ -188,12 +213,10 @@ export default function VideoPlayer() {
   }
 
   const togglePlay = () => {
-    const isYT = currentSource?.source?.includes('youtube.com') || currentSource?.source?.includes('youtu.be') || currentSource?.type === 'youtube' || (currentSource?.source?.length === 11 && !currentSource.source.includes('.'));
-
-    if (isYT && playerRef.current) {
+    if (isYTMode && playerRef.current) {
        if (isPlaying) playerRef.current.pauseVideo();
        else playerRef.current.playVideo();
-    } else if (currentSource?.type === 'audio' && audioRef.current) {
+    } else if (isAudioMode && audioRef.current) {
        if (isPlaying) audioRef.current.pause();
        else audioRef.current.play().catch(() => {});
     }
@@ -207,11 +230,9 @@ export default function VideoPlayer() {
     const percent = x / rect.width;
     const targetTime = percent * duration;
 
-    const isYT = currentSource?.source?.includes('youtube.com') || currentSource?.source?.includes('youtu.be') || currentSource?.type === 'youtube' || (currentSource?.source?.length === 11 && !currentSource.source.includes('.'));
-
-    if (isYT && playerRef.current) {
+    if (isYTMode && playerRef.current) {
        playerRef.current.seekTo(targetTime);
-    } else if (currentSource?.type === 'audio' && audioRef.current) {
+    } else if (isAudioMode && audioRef.current) {
        audioRef.current.currentTime = targetTime;
     }
   }
@@ -369,8 +390,10 @@ export default function VideoPlayer() {
         }
       `}</style>
 
+      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4478399347291835" crossOrigin="anonymous" strategy="afterInteractive" />
+      
       <h2 style={{ color: '#fff', fontFamily: 'Poppins', fontWeight: 'bold', fontSize: '1.8rem', textAlign: 'center', marginBottom: '5px' }}>
-        {isAdVisible ? 'Commercial Break' : activeMiqaat.title}
+        {activeMiqaat.title}
       </h2>
 
       {!isAdVisible && (
@@ -397,30 +420,32 @@ export default function VideoPlayer() {
         }}
       >
         {isAdVisible ? (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff' }}>
-                <div ref={(el) => {
-                    if (el && activeMiqaat.adSource) {
-                      el.innerHTML = '';
-                      const range = document.createRange();
-                      const fragment = range.createContextualFragment(activeMiqaat.adSource);
-                      el.appendChild(fragment);
-                      if (activeMiqaat.adSource.includes('adsbygoogle')) {
-                          try { (window as any).adsbygoogle = ((window as any).adsbygoogle || []).push({}); } catch(e) {}
-                      }
-                    }
-                }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+                 <AdSenseAd inPlayer={true} />
             </div>
         ) : (
           <>
             <div className="video-frame" id={`yt-player-${activeMiqaat.id}`} style={{ 
-               position: currentSource?.type === 'audio' ? 'absolute' : 'relative',
-               left: currentSource?.type === 'audio' ? '-9999px' : '0',
-               opacity: currentSource?.type === 'audio' ? 0 : 1
+               position: !isYTMode ? 'absolute' : 'relative',
+               left: !isYTMode ? '-9999px' : '0',
+               opacity: !isYTMode ? 0 : 1
             }}>
                {!selectedServer && <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>INITIALIZING...</div>}
             </div>
 
-            {currentSource?.type === 'audio' && (
+            {isEmbedMode && currentSource?.source && (
+                 <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 6 }}
+                    ref={(el) => {
+                       if (el && el.innerHTML === '') {
+                          const range = document.createRange();
+                          const fragment = range.createContextualFragment(currentSource.source);
+                          el.appendChild(fragment);
+                       }
+                    }} 
+                 />
+            )}
+
+            {isAudioMode && (
                   <div style={{ padding: '0 40px', display: 'flex', alignItems: 'center', gap: '20px', width: '100%', height: '100%', position: 'relative', zIndex: 2 }}>
                      <div style={{ display: 'flex', gap: '4px', height: '40px', alignItems: 'flex-end' }}>
                         {[...Array(8)].map((_, i) => (
@@ -431,15 +456,15 @@ export default function VideoPlayer() {
                         <div style={{ fontWeight: 800, color: '#daaf1d', fontSize: '1.2rem', letterSpacing: '1px' }}>LIVE AUDIO STREAM</div>
                         <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>{activeMiqaat.title}</div>
                      </div>
-                     {!currentSource.source.includes('youtube') && !currentSource.source.includes('youtu.be') && currentSource.source.includes('.') && (
+                     {currentSource?.source && (
                         <audio autoPlay src={currentSource.source} ref={audioRef} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
                      )}
                   </div>
             )}
             
-            <div className="video-tap-overlay" onClick={togglePlay}></div>
+            {!isEmbedMode && <div className="video-tap-overlay" onClick={togglePlay}></div>}
 
-            <div className="custom-video-controls" style={{ opacity: (showControls || currentSource?.type === 'audio') ? 1 : 0, pointerEvents: 'auto' }}>
+            <div className="custom-video-controls" style={{ opacity: (showControls || isAudioMode) ? 1 : 0, pointerEvents: 'auto', display: isEmbedMode ? 'none' : 'block' }}>
                 <div className="video-progress-container" onClick={handleSeek}>
                     <div className="video-progress-bar" style={{ width: `${(currentTime / duration) * 100 || 0}%` }}></div>
                 </div>
@@ -476,6 +501,10 @@ export default function VideoPlayer() {
             </div>
           </>
         )}
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '900px', margin: '20px 0' }}>
+         <AdSenseAd />
       </div>
 
       <img src="/dashboard image.png" alt="Ya Hussain" className="central-graphic" style={{ opacity: selectedServer || isAdVisible ? 0.5 : 0.8 }} />
